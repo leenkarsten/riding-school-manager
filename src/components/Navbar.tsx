@@ -3,9 +3,16 @@
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { LogOut, Loader2 } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
 export default function Navbar() {
   const { user, signOut, loading } = useAuth();
+  const pathname = usePathname();
+
+  // Don't show navbar on login page
+  if (pathname === '/login') {
+    return null;
+  }
 
   if (loading) {
     return (
@@ -28,25 +35,37 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex">
-            <Link href="/" className="flex items-center px-2 text-gray-900 font-bold">
+            <Link href="/students" className="flex items-center px-2 text-gray-900 font-bold">
               Riding School Manager
             </Link>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               <Link
                 href="/students"
-                className="inline-flex items-center px-1 pt-1 text-gray-500 hover:text-gray-900"
+                className={`inline-flex items-center px-1 pt-1 border-b-2 ${
+                  pathname === '/students'
+                    ? 'border-blue-500 text-gray-900'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
               >
                 Students
               </Link>
               <Link
                 href="/lessons"
-                className="inline-flex items-center px-1 pt-1 text-gray-500 hover:text-gray-900"
+                className={`inline-flex items-center px-1 pt-1 border-b-2 ${
+                  pathname === '/lessons'
+                    ? 'border-blue-500 text-gray-900'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
               >
                 Lessons
               </Link>
               <Link
                 href="/competitions"
-                className="inline-flex items-center px-1 pt-1 text-gray-500 hover:text-gray-900"
+                className={`inline-flex items-center px-1 pt-1 border-b-2 ${
+                  pathname === '/competitions'
+                    ? 'border-blue-500 text-gray-900'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
               >
                 Competitions
               </Link>
@@ -68,3 +87,4 @@ export default function Navbar() {
     </nav>
   );
 }
+                  
