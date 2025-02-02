@@ -14,7 +14,7 @@ interface EditStudentFormProps {
 export default function EditStudentForm({ student, onClose, onSuccess }: EditStudentFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+    
   const [formData, setFormData] = useState({
     name: student.name,
     email: student.email,
