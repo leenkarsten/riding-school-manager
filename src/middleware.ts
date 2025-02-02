@@ -10,23 +10,22 @@ export async function middleware(req: NextRequest) {
     data: { session },
   } = await supabase.auth.getSession();
 
-  // Auth Required Routes
-  if (req.nextUrl.pathname.startsWith('/students') || 
-      req.nextUrl.pathname.startsWith('/lessons') || 
-      req.nextUrl.pathname.startsWith('/competitions')) {
-    if (!session) {
-      return NextResponse.redirect(new URL('/login', req.url));
-    }
+  // Protect routes
+  if (!session && req.nextUrl.pathname !== '/login') {
+    const redirectUrl = new URL('/login', req.url);
+    return NextResponse.redirect(redirectUrl);
   }
 
-  // Already logged in
-  if (req.nextUrl.pathname === '/login' && session) {
-    return NextResponse.redirect(new URL('/students', req.url));
+  // Redirect from login if already authenticated
+  if (session && req.nextUrl.pathname === '/login') {
+    const redirectUrl = new URL('/students', req.url);
+    return NextResponse.redirect(redirectUrl);
   }
 
   return res;
 }
 
+// Only run middleware on specific routes
 export const config = {
-  matcher: ['/students/:path*', '/lessons/:path*', '/competitions/:path*', '/login']
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)']
 };

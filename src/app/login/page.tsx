@@ -2,11 +2,9 @@
 
 import { useState } from 'react';
 import { Mail, Lock, Loader2 } from 'lucide-react';
-import { createClient } from '@/lib/auth';
-import { useRouter } from 'next/navigation';
+import supabase from '@/lib/supabase';
 
 export default function LoginPage() {
-  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -18,8 +16,6 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      const supabase = createClient();
-      
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -28,7 +24,6 @@ export default function LoginPage() {
       if (signInError) throw signInError;
 
       if (data?.user) {
-        // Force a hard reload to ensure proper session state
         window.location.href = '/students';
       }
     } catch (err) {
