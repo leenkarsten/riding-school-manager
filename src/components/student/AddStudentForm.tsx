@@ -41,7 +41,7 @@ export default function AddStudentForm({ onClose, onSuccess }: AddStudentFormPro
           age: parseInt(formData.horse.age) || 0
         },
         competitions: [],
-        trainingGoals: []
+        training_goals: []
       });
       
       onSuccess?.();
