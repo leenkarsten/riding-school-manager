@@ -13,7 +13,7 @@ export interface Student {
       discipline: string;
     };
     competitions: Competition[];
-    trainingGoals: string[];
+    training_goals?: TrainingGoal[];
   }
   
   export interface Lesson {
@@ -37,9 +37,8 @@ export interface Student {
   
   export interface TrainingGoal {
     id: string;
-    studentId: string;
     description: string;
-    status: 'pending' | 'in-progress' | 'completed';
-    createdAt: string;
-    completedAt?: string;
+    created_at: string;
+    student_id: string;
+    completed: boolean;
   }
