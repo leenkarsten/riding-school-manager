@@ -1,4 +1,4 @@
-import { supabase } from '../supabase';
+import supabase from '../supabase';
 import type { Student } from '@/types';
 
 export async function getStudents() {
@@ -11,7 +11,7 @@ export async function getStudents() {
 
   if (error) throw error;
   return data;
-}
+  }
 
 export async function getStudentById(id: string) {
   const { data, error } = await supabase
