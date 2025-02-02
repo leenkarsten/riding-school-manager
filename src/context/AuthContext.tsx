@@ -41,8 +41,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signOut = async () => {
-    await supabase.auth.signOut();
-    router.push('/login');
+    try {
+      await supabase.auth.signOut();
+      // Force a full page reload to clear all states
+      window.location.href = '/login';
+    } catch (error) {
+      console.error('Error signing out:', error);
+      // Fallback if the normal sign out fails
+      try {
+        // Clear all local storage and session storage
+        localStorage.clear();
+        sessionStorage.clear();
+        // Force reload to login
+        window.location.href = '/login';
+      } catch (e) {
+        console.error('Fallback logout failed:', e);
+      }
+    }
   };
 
   return (
