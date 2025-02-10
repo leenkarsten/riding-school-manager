@@ -28,7 +28,7 @@ export async function createLesson(lesson: Omit<Lesson, 'id'>) {
   const { data, error } = await supabase
     .from('lessons')
     .insert([{
-      student_id: lesson.studentId,
+      student_id: lesson.student_id,
       date: lesson.date,
       time: lesson.time,
       duration: lesson.duration,

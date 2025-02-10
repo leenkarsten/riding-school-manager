@@ -43,10 +43,10 @@ export default function AddLessonForm({ onClose, onSuccess, selectedDate }: AddL
     e.preventDefault();
     setLoading(true);
     setError(null);
-
     try {
       await createLesson({
         ...formData,
+        student_id: formData.studentId,
         duration: parseInt(formData.duration)
       });
       onSuccess?.();

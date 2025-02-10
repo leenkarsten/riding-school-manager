@@ -145,7 +145,7 @@ export default function LessonScheduler() {
                   <span className="font-medium">{lesson.time}</span>
                 </div>
                 <div className="flex-1">
-                  <div className="font-medium">{lesson.studentId}</div>
+                  <div className="font-medium">{lesson.student?.name || 'Unknown Student'}</div>
                   <div className="text-sm text-gray-500">{lesson.focus}</div>
                 </div>
                 <div className="flex items-center gap-4">

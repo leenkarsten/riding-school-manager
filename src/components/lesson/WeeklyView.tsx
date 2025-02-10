@@ -54,7 +54,7 @@ export default function WeeklyView({ lessons, currentDate, onDeleteLesson }: Wee
                       {lesson.time}
                     </div>
                     <div className="font-medium">
-                      {lesson.studentId}
+                      {lesson.student?.name || 'Unknown Student'}
                     </div>
                     <div className="text-sm text-gray-500">
                       {lesson.focus}

@@ -3,12 +3,18 @@
 import { useState } from 'react';
 import { Mail, Lock, Loader2 } from 'lucide-react';
 import supabase from '@/lib/supabase';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const justRegistered = searchParams.get('registered');
+  const verificationPending = searchParams.get('verification');
+  const urlError = searchParams.get('error');
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,15 +27,41 @@ export default function LoginPage() {
         password,
       });
 
-      if (signInError) throw signInError;
+      if (signInError) {
+        console.error('Sign in error:', signInError);
+        throw signInError;
+      }
 
       if (data?.user) {
-        window.location.href = '/students';
+        // Get user role to determine redirect
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', data.user.id)
+          .single();
+
+        if (profileError) {
+          console.error('Profile fetch error:', profileError);
+          setError('Failed to fetch user profile. Please try again.');
+          setLoading(false);
+          return;
+        }
+
+        if (!profile) {
+          console.error('No profile found');
+          setError('User profile not found. Please register first.');
+          // Sign out the user since their profile is missing
+          await supabase.auth.signOut();
+          setLoading(false);
+          return;
+        }
+
+        // Force a full page reload to the appropriate route
+        window.location.href = profile.role === 'admin' ? '/students' : '/dashboard';
       }
     } catch (err) {
       console.error('Login error:', err);
       setError('Invalid email or password');
-    } finally {
       setLoading(false);
     }
   };
@@ -46,13 +78,32 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleLogin}>
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-600 rounded-md p-4 text-sm">
-              {error}
-            </div>
-          )}
+        {justRegistered && (
+          <div className="bg-green-50 border border-green-200 text-green-600 rounded-md p-4 text-sm mb-4">
+            Registration successful! Please log in with your credentials.
+          </div>
+        )}
 
+        {verificationPending && (
+          <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-md p-4 text-sm mb-4">
+            Please check your email to verify your account before logging in. 
+            The verification email may take a few minutes to arrive.
+          </div>
+        )}
+
+        {urlError === 'profile_missing' && (
+          <div className="bg-red-50 border border-red-200 text-red-600 rounded-md p-4 text-sm mb-4">
+            There was an issue with your account. Please try registering again.
+          </div>
+        )}
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-600 rounded-md p-4 text-sm">
+            {error}
+          </div>
+        )}
+
+        <form className="mt-8 space-y-6" onSubmit={handleLogin}>
           <div className="rounded-md shadow-sm space-y-4">
             <div>
               <label htmlFor="email" className="sr-only">
@@ -111,7 +162,20 @@ export default function LoginPage() {
                 'Sign in'
               )}
             </button>
+
+            <div className="text-sm text-center mt-4">
+              <p className="text-gray-600">
+                Don't have an account?{' '}
+                <Link
+                  href="/register"
+                  className="font-medium text-blue-600 hover:text-blue-500"
+                >
+                  Register here
+                </Link>
+              </p>
+            </div>
           </div>
+          
         </form>
       </div>
     </div>
